@@ -61,6 +61,63 @@ TODO
 
 # Specification
 
+The new_path transport parameter is used for negotiating the use of the
+extension is defined below.
+
+## New Path Transport Parameter
+
+The new_path transport parameter can be sent by both a client and server.  The
+transport parameter is sent with an empty value by the server; an endpoint that
+understands this transport parameter MUST treat the receipt of a non-empty value
+as a connection error of type TRANSPORT_PARAMETER_ERROR.
+
+Advertising the new_path transport parameter indicates that the
+endpoint supports NEW_PATH_REQUEST and NEW_PATH_RESPONSE frames.  Both sides
+must advertise support for the extension for it to be considered successfully
+negotiated.
+
+If successfully negotiated, the NEW_PATH_REQUEST and NEW_PATH_RESPONSE frames
+may be used by either endpoint to request a new path be created.
+
+## Requesting New Paths
+
+TODO
+
+## NEW_PATH_REQUEST and NEW_PATH_RESPONSE frames
+
+~~~
+Path Address {
+  Address Type (8)
+  IP Address (32 or 128),
+  UDP Port (16),
+}
+~~~
+{: #fig-path-address title="Path Address format"}
+
+NEW_PATH_REQUEST frames are formatted as shown in {{new-path-request-format}}.
+
+~~~
+NEW_PATH_REQUEST Frame {
+  Type (i) = 0xA0,
+  Request Id (i),
+  Path Address Count (i),
+  Path Address (..) ...,
+}
+~~~
+{: #new-path-request-format title="NEW_PATH_REQUEST Frame Format"}
+
+~~~
+NEW_PATH_RESPONSE Frame {
+  Type (i) = 0xA0,
+  Request Id (i),
+  Path Address Count (i),
+  Path Address (..) ...,
+}
+~~~
+{: #new-path-response-format title="NEW_PATH_RESPONSE Frame Format"}
+
+## NAT Traversal
+
 TODO
 
 # Security Considerations
@@ -69,13 +126,28 @@ TODO
 
 # IANA Considerations
 
-This document registers a new value in the QUIC Transport Parameter
-Registry:
+This document registers a new value in the QUIC Transport Parameter Registry:
 
-Value: TBD (using value ? in early deployments)
+Value: TBD (using value 0x1234 in early deployments)
 
 Parameter Name: new_path
 
-Specification: Indicates the new-path extension is being negotiated.
+Specification: Indicates the new-path extension is supported.
+
+This document also registers a new value in the QUIC Frame Type registry:
+
+Value: TBD (using value 0xA0 in early deployments)
+
+Frame Name: NEW_PATH_REQUEST
+
+Specification: Request for a new path to be created.
+
+This document also registers a new value in the QUIC Frame Type registry:
+
+Value: TBD (using value 0xA1 in early deployments)
+
+Frame Name: NEW_PATH_RESPONSE
+
+Specification: Response to a new path request.
 
 --- back
