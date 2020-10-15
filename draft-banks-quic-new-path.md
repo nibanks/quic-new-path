@@ -26,10 +26,9 @@ author:
 
 This document describes an extension to the QUIC protocol to allow for one
 endpoint to explicitly request that a new network path be used. The endpoint
-that originates the request supplies one or more public IP addresses and UDP
-ports to connect to, and if the peer accepts the request will then (possibly
-using a completely new IP address and port of its own) attempt to use that new
-path.
+that originates the request supplies one or more IP addresses and UDP ports to
+connect to, and if the peer accepts the request will then attempt to use that
+new path.
 
 --- middle
 
