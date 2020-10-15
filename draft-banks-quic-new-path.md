@@ -58,7 +58,8 @@ when, and only when, they appear in all capitals, as shown here.
 
 ## Applicable Scenarios for Use
 
-TODO
+TODO - Dynamic server migration
+     - NAT/Firewall punch-through
 
 # Specification
 
@@ -113,7 +114,18 @@ TODO - What retransmission logic should be used for the probes?
 TODO - Probes may be received by either endpoint on different addresses than
        those advertised, because of NATs and firewalls.
 
+## NAT Traversal
+
+TODO - Should this document describe the mechanisms for punching through NATs or
+       should this document just describe the base mechanics?
+TODO - Discussion of public IP address discovery in order to share that with the
+       peer?
+
 ## NEW_PATH_REQUEST and NEW_PATH_RESPONSE frames
+
+The Path Address structure represents a single IPv4 or IPV6 address (type
+determined by length) and a UDP port. It is formated as shown in
+{{path-address-format}}.
 
 ~~~
 Path Address {
@@ -148,13 +160,10 @@ NEW_PATH_RESPONSE Frame {
 ~~~
 {: #new-path-response-format title="NEW_PATH_RESPONSE Frame Format"}
 
-## NAT Traversal
-
-TODO
-
 # Security Considerations
 
-TODO
+TODO - Even when supported, should the extension be disabled by default?
+TODO - Could be used to bypass firewalls or monitors in previously unexpected ways.
 
 # IANA Considerations
 
