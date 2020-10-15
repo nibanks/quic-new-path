@@ -26,9 +26,10 @@ author:
 
 This document describes an extension to the QUIC protocol to allow for one
 endpoint to explicitly request that a new network path be used. The endpoint
-that originates the request supplies a public IP address and UDP port to connect
-to, and if the peer accepts the request will then (possibly using a completely
-new IP address and port of its own) attempt to use that new path.
+that originates the request supplies one or more public IP addresses and UDP
+ports to connect to, and if the peer accepts the request will then (possibly
+using a completely new IP address and port of its own) attempt to use that new
+path.
 
 --- middle
 
@@ -81,15 +82,44 @@ may be used by either endpoint to request a new path be created.
 
 ## Requesting New Paths
 
-TODO
+Once the extension has been negotiated, an endpoint may request a new path any
+time after normal migration would be allowed.  If an endpoint must treat the
+receipt of a NEW_PATH_REQUEST frame before that as a connection error of type
+PROTOCOL_VIOLATION.
+
+An endpoint begins the new path request process by selecting one or more
+addresses (and UDP ports) they wish to use for the new path.  These addresses,
+along with a new request identifier (monotomically increasing number) are
+packaged into a NEW_PATH_REQUEST frame and sent over the current path to the
+peer.
+
+TODO - How to select the addresses for the request?
+
+When the peer received the request it must decide if it can/will accept the
+request.  If it will not accept the request, it MUST reply with a
+NEW_PATH_RESPONSE frame with the RequestAccepted bit set to zero.  If the peer
+does accept the request it MUST reply with a NEW_PATH_RESPONSE frame with the
+RequestAccepted bit set to one, and optionally, one or more addresses to use for
+the new path.
+
+TODO - When to (or not to) supply addresses in the response?
+TODO - How to select the addresses for the response?
+
+Once an endpoint has accepted a new path request or received a new path response
+it should start probing all valid combination of local and peer IP addresses.
+
+TODO - How to apply amplification protection logic?
+TODO - What retransmission logic should be used for the probes?
+TODO - Probes may be received by either endpoint on different addresses than
+       those advertised, because of NATs and firewalls.
 
 ## NEW_PATH_REQUEST and NEW_PATH_RESPONSE frames
 
 ~~~
 Path Address {
-  Address Type (8)
-  IP Address (32 or 128),
   UDP Port (16),
+  IP Address Length (8),
+  IP Address (..),
 }
 ~~~
 {: #fig-path-address title="Path Address format"}
@@ -108,8 +138,10 @@ NEW_PATH_REQUEST Frame {
 
 ~~~
 NEW_PATH_RESPONSE Frame {
-  Type (i) = 0xA0,
+  Type (i) = 0xA1,
   Request Id (i),
+  RequestAccepted (1),
+  Reserved (7),
   Path Address Count (i),
   Path Address (..) ...,
 }
@@ -128,26 +160,26 @@ TODO
 
 This document registers a new value in the QUIC Transport Parameter Registry:
 
-Value: TBD (using value 0x1234 in early deployments)
+   Value: TBD (using value 0x1234 in early deployments)
 
-Parameter Name: new_path
+  Parameter Name: new_path
 
-Specification: Indicates the new-path extension is supported.
-
-This document also registers a new value in the QUIC Frame Type registry:
-
-Value: TBD (using value 0xA0 in early deployments)
-
-Frame Name: NEW_PATH_REQUEST
-
-Specification: Request for a new path to be created.
+  Specification: Indicates the new-path extension is supported.
 
 This document also registers a new value in the QUIC Frame Type registry:
 
-Value: TBD (using value 0xA1 in early deployments)
+  Value: TBD (using value 0xA0 in early deployments)
 
-Frame Name: NEW_PATH_RESPONSE
+  Frame Name: NEW_PATH_REQUEST
 
-Specification: Response to a new path request.
+  Specification: Request for a new path to be created.
+
+This document also registers a new value in the QUIC Frame Type registry:
+
+  Value: TBD (using value 0xA1 in early deployments)
+
+  Frame Name: NEW_PATH_RESPONSE
+
+  Specification: Response to a new path request.
 
 --- back
